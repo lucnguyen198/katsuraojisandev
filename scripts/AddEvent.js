@@ -12,7 +12,7 @@ async function main() {
     await ethers.getContractFactory("KatsuraOjisanExtra")
   ).attach(contractAddresses.KatsuraOjisanExtra);
   console.log("Add event");
-  const tx = await contract.addEvent(process.env.REACT_APP_EVENT_ID, 50, 1, "ipfs://QmSPrPVGThGnyRW6L8qurU75z5pftonN26HegZcDULeU6L", contractAddresses.KatsuraOjisanCondition, true);
+  const tx = await contract.addEvent(process.env.REACT_APP_EVENT_ID, 50, 1, "ipfs://QmSPrPVGThGnyRW6L8qurU75z5pftonN26HegZcDULeU6L", contractAddresses.KatsuraOjisanCondition, true, false);
   await tx.wait();
   console.log("Success");
 }

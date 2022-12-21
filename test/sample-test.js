@@ -46,9 +46,7 @@ describe("TEST", function() {
 
   async function deployKatsuraExtraFixture() {
     // Get the ContractFactory and Signers here.
-    const factory = await ethers.getContractFactory(
-      "KatsuraOjisanExtra"
-    );
+    const factory = await ethers.getContractFactory("KatsuraOjisanExtra");
     const [
       owner,
       addr1,
@@ -112,14 +110,11 @@ describe("TEST", function() {
     };
   }
 
-
   async function conditionAndMainFixture() {
     let conditionObj = {};
     let mainObj = {};
     {
-       const factory = await ethers.getContractFactory(
-      "KatsuraOjisan"
-      );
+      const factory = await ethers.getContractFactory("KatsuraOjisan");
       const [
         owner,
         addr1,
@@ -133,12 +128,22 @@ describe("TEST", function() {
 
       await contract.deployed();
 
-      mainObj={...mainObj, factory, contract, owner, addr1, addr2, addr3, addr4,addr5};
+      mainObj = {
+        ...mainObj,
+        factory,
+        contract,
+        owner,
+        addr1,
+        addr2,
+        addr3,
+        addr4,
+        addr5
+      };
     }
 
     {
-       const factory = await ethers.getContractFactory(
-      "KatsuraOjisanExtraCondition"
+      const factory = await ethers.getContractFactory(
+        "KatsuraOjisanExtraCondition"
       );
       const [
         owner,
@@ -153,9 +158,19 @@ describe("TEST", function() {
 
       await contract.deployed();
 
-      conditionObj={...conditionObj, factory, contract, owner, addr1, addr2, addr3, addr4,addr5};
+      conditionObj = {
+        ...conditionObj,
+        factory,
+        contract,
+        owner,
+        addr1,
+        addr2,
+        addr3,
+        addr4,
+        addr5
+      };
     }
-   
+
     return {
       mainObj,
       conditionObj
@@ -167,9 +182,7 @@ describe("TEST", function() {
     let mainObj = {};
     let extraObj = {};
     {
-       const factory = await ethers.getContractFactory(
-      "KatsuraOjisan"
-      );
+      const factory = await ethers.getContractFactory("KatsuraOjisan");
       const [
         owner,
         addr1,
@@ -183,12 +196,22 @@ describe("TEST", function() {
 
       await contract.deployed();
 
-      mainObj={...mainObj, factory, contract, owner, addr1, addr2, addr3, addr4,addr5};
+      mainObj = {
+        ...mainObj,
+        factory,
+        contract,
+        owner,
+        addr1,
+        addr2,
+        addr3,
+        addr4,
+        addr5
+      };
     }
 
     {
-       const factory = await ethers.getContractFactory(
-      "KatsuraOjisanExtraCondition"
+      const factory = await ethers.getContractFactory(
+        "KatsuraOjisanExtraCondition"
       );
       const [
         owner,
@@ -203,13 +226,21 @@ describe("TEST", function() {
 
       await contract.deployed();
 
-      conditionObj={...conditionObj, factory, contract, owner, addr1, addr2, addr3, addr4,addr5};
+      conditionObj = {
+        ...conditionObj,
+        factory,
+        contract,
+        owner,
+        addr1,
+        addr2,
+        addr3,
+        addr4,
+        addr5
+      };
     }
 
     {
-       const factory = await ethers.getContractFactory(
-      "KatsuraOjisanExtra"
-      );
+      const factory = await ethers.getContractFactory("KatsuraOjisanExtra");
       const [
         owner,
         addr1,
@@ -223,9 +254,19 @@ describe("TEST", function() {
 
       await contract.deployed();
 
-      extraObj={...extraObj, factory, contract, owner, addr1, addr2, addr3, addr4,addr5};
+      extraObj = {
+        ...extraObj,
+        factory,
+        contract,
+        owner,
+        addr1,
+        addr2,
+        addr3,
+        addr4,
+        addr5
+      };
     }
-   
+
     return {
       mainObj,
       conditionObj,
@@ -233,233 +274,1052 @@ describe("TEST", function() {
     };
   }
 
+  describe("KatsuraOjisanExtraCondition contract", function() {
+    it("Should set the right owner", async function() {
+      const contractObj = await loadFixture(deployConditionFixture);
+      expect(await contractObj.contract.owner()).to.equal(
+        contractObj.owner.address
+      );
+    });
 
-describe("KatsuraOjisanExtraCondition contract", function () {
-        it("Should set the right owner", async function () {
-          const contractObj = await loadFixture(deployConditionFixture);
-          expect(await contractObj.contract.owner()).to.equal(contractObj.owner.address);
-        });
+    it("Set Contract not owner", async function() {
+      const { mainObj, conditionObj } = await loadFixture(conditionAndMainFixture);
+      await expect(conditionObj.contract.connect(conditionObj.addr1).SetContract(mainObj.contract.address)).to.be.revertedWith("Ownable: caller is not the owner");
+    });
 
-        it("Set Contract", async function () {
-          const mainObj = await loadFixture(deployKatsuraOjisanFixture);
-          const conditionObj = await loadFixture(deployConditionFixture);
-          await conditionObj.contract.SetContract(mainObj.contract.address);
-          expect(await conditionObj.contract.katsuraOjisanContract()).to.equal(mainObj.contract.address);
-        });
+    it("Set Contract", async function() {
+      const { mainObj, conditionObj } = await loadFixture(conditionAndMainFixture);
+      await conditionObj.contract.SetContract(mainObj.contract.address);
+      expect(await conditionObj.contract.katsuraOjisanContract()).to.equal(
+        mainObj.contract.address
+      );
+    });
 
-        it("Event Condition false", async function () {
-          const {mainObj, conditionObj} = await loadFixture(conditionAndMainFixture);
-          await conditionObj.contract.SetContract(mainObj.contract.address);
-          expect(await conditionObj.contract.EventCondition(mainObj.addr1.address)).to.equal(false);
-        });
-        
-        it("Event Condition true", async function () {
-          const {mainObj, conditionObj} = await loadFixture(conditionAndMainFixture);
-          await conditionObj.contract.SetContract(mainObj.contract.address);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1,mainObj.addr1.address);
-          expect(await conditionObj.contract.EventCondition(mainObj.addr1.address)).to.equal(true);
-        });
+    it("Event Condition false", async function() {
+      const { mainObj, conditionObj } = await loadFixture(
+        conditionAndMainFixture
+      );
+      await conditionObj.contract.SetContract(mainObj.contract.address);
+      expect(
+        await conditionObj.contract.EventCondition(mainObj.addr1.address)
+      ).to.equal(false);
+    });
 
+    it("Event Condition true", async function() {
+      const { mainObj, conditionObj } = await loadFixture(
+        conditionAndMainFixture
+      );
+      await conditionObj.contract.SetContract(mainObj.contract.address);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      expect(
+        await conditionObj.contract.EventCondition(mainObj.addr1.address)
+      ).to.equal(true);
+    });
   });
 
+  describe("KatsuraOjisanExtra contract", function() {
+    it("Should set the right owner", async function() {
+      const contractObj = await loadFixture(deployKatsuraExtraFixture);
+      expect(await contractObj.contract.owner()).to.equal(
+        contractObj.owner.address
+      );
+    });
 
-  describe("KatsuraOjisanExtra contract", function () {
-      it("Should set the right owner", async function () {
-          const contractObj = await loadFixture(deployKatsuraExtraFixture);
-          expect(await contractObj.contract.owner()).to.equal(contractObj.owner.address);
-        });
+    it("AddCollection not owner", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 10,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await expect(extraObj.contract.connect(extraObj.addr1).AddCollection(eventId,1,5)).to.be.revertedWith("Ownable: caller is not the owner");
+    });
 
-        it("Add Event", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          const data = await extraObj.contract.events(eventId);
-          expect(data.maxSupply).to.equal(eventData.maxSupply);
-          expect(data.maxMintsPerAddress).to.equal(eventData.maxMintsPerAddress);
-          expect(data.isSame).to.equal(eventData.isSame);
-          expect(data.uri).to.equal(eventData.uri);
-          expect(data.conditionContract).to.equal(eventData.conditionContract);
-        });
+    it("AddCollection success", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 10,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,5);
+      for(let i=0;i<5;i++)
+      {
+        expect(await extraObj.contract.collections(eventId,i)).to.equal(1);
+      }
+    });
 
-        it("Active Event true", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await extraObj.contract.activeEvent(eventId, true);
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxMintsPerAddress)).to.equal(true);
-        });
+    it("Remove Collection not owner", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 10,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await expect(extraObj.contract.connect(extraObj.addr1).RemoveCollection(eventId)).to.be.revertedWith("Ownable: caller is not the owner");
+    });
 
-         it("Active Event false", async function () {
-          const {mainObj, conditionObj, extraObj}  = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await extraObj.contract.activeEvent(eventId, false);
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxMintsPerAddress)).to.equal(false);
-        });
+    it("Remove Collection", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 10,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,5);
+      await extraObj.contract.connect(extraObj.owner).RemoveCollection(eventId)
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,2,5);
+      for(let i=0;i<5;i++)
+      {
+        expect(await extraObj.contract.collections(eventId,i)).to.equal(2);
+      }
+    });
 
-        it("Event check event not exist", async function () {
-          const {mainObj, conditionObj, extraObj}  = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxMintsPerAddress)).to.equal(false);
-        });
+    it("Add Event not owner", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await expect(extraObj.contract
+        .connect(extraObj.addr1)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        )).to.be.revertedWith("Ownable: caller is not the owner");
+    });
 
-         it("Event check active false", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          const eventData = {eventId: 1, maxSupply: 50,maxMintsPerAddress:1, uri:"ipfsuri", conditionContract:conditionObj.contract.address, isSame: true};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventData.eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          expect(await extraObj.contract.eventCheck(eventData.eventId, eventData.maxMintsPerAddress)).to.equal(false);
-        });
+    it("Add Event", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      const data = await extraObj.contract.events(eventId);
+      expect(data.maxSupply).to.equal(eventData.maxSupply);
+      expect(data.maxMintsPerAddress).to.equal(eventData.maxMintsPerAddress);
+      expect(data.isSame).to.equal(eventData.isSame);
+      expect(data.uri).to.equal(eventData.uri);
+      expect(data.conditionContract).to.equal(eventData.conditionContract);
+    });
 
-        it("Event check active true", async function () {
-          const {mainObj, conditionObj, extraObj}  = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxMintsPerAddress)).to.equal(false);
-        });
+    it("Active Event not owner", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await expect(extraObj.contract.connect(extraObj.addr1).activeEvent(eventId, true)).to.be.revertedWith("Ownable: caller is not the owner");
+    });
 
-        it("Event check maxSupply exceed", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 1,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxSupply + 1)).to.equal(false);
-        });
+    it("Active Event true", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract.activeEvent(eventId, true);
+      expect(
+        await extraObj.contract.eventCheck(
+          eventId,
+          eventData.maxMintsPerAddress
+        )
+      ).to.equal(true);
+    });
 
-        it("Event check maxMintsPerAddress exceed", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          const eventId= 1; 
-          const eventData = {maxSupply: 1,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          expect(await extraObj.contract.eventCheck(eventId, eventData.maxMintsPerAddress + 1)).to.equal(false);
-        });
+    it("Active Event false", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract.activeEvent(eventId, false);
+      expect(
+        await extraObj.contract.eventCheck(
+          eventId,
+          eventData.maxMintsPerAddress
+        )
+      ).to.equal(false);
+    });
 
-        it("Condition Check true", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          expect(await extraObj.contract.conditionCheck(eventId, mainObj.addr1.address)).to.equal(true);
-        });
+    it("Event check event not exist", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      expect(
+        await extraObj.contract.eventCheck(
+          eventId,
+          eventData.maxMintsPerAddress
+        )
+      ).to.equal(false);
+    });
 
-        it("Condition Check false", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          expect(await extraObj.contract.conditionCheck(eventId, mainObj.addr1.address)).to.equal(false);
-        });
+    it("Event check active false", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventData = {
+        eventId: 1,
+        maxSupply: 50,
+        maxMintsPerAddress: 1,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address,
+        isSame: true,
+        isRandom: false
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventData.eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      expect(
+        await extraObj.contract.eventCheck(
+          eventData.eventId,
+          eventData.maxMintsPerAddress
+        )
+      ).to.equal(false);
+    });
 
-        it("Check balance 0", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          expect(await extraObj.contract.getEventBalance(eventId, mainObj.addr1.address)).to.equal(0);
-        });
+    it("Event check active true", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
 
-        it("Check balance 1", async function () {
-           const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-           await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          expect(await extraObj.contract.getEventBalance(eventId, mainObj.addr1.address)).to.equal(1);
-        });
+      expect(
+        await extraObj.contract.eventCheck(
+          eventId,
+          eventData.maxMintsPerAddress
+        )
+      ).to.equal(false);
+    });
 
-        it("mint event inactive", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          // await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await expect(extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Event check failed");          
-        });
+    it("Event check maxSupply exceed", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 1,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      expect(
+        await extraObj.contract.eventCheck(eventId, eventData.maxSupply + 1)
+      ).to.equal(false);
+    });
 
-        it("mint maxsupply exceed", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 1,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr2.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          await expect(extraObj.contract.connect(mainObj.addr2).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Event check failed");          
-        });
+    it("Event check maxMintsPerAddress exceed", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 1,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      expect(
+        await extraObj.contract.eventCheck(
+          eventId,
+          eventData.maxMintsPerAddress + 1
+        )
+      ).to.equal(false);
+    });
 
-        it("mint maxMintsPerAddress exceed", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          await expect(extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Event check failed");          
-        });
+    it("Condition Check true", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      expect(
+        await extraObj.contract.conditionCheck(eventId, mainObj.addr1.address)
+      ).to.equal(true);
+    });
 
-        it("mint condition fail", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-          await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await expect(extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Condition check failed");          
-        });
+    it("Condition Check false", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      expect(
+        await extraObj.contract.conditionCheck(eventId, mainObj.addr1.address)
+      ).to.equal(false);
+    });
 
-        it("mint success", async function () {
-          const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-           await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          expect(await extraObj.contract.ownerOf(1)).to.equal(mainObj.addr1.address);
-        });
+    it("Check balance 0", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      expect(
+        await extraObj.contract.getEventBalance(eventId, mainObj.addr1.address)
+      ).to.equal(0);
+    });
 
-        it("tokenURI shared", async function() {
-        const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: true, uri:"ipfsuri", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-           await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          expect(await extraObj.contract.tokenURI(1)).to.equal(eventData.uri);
-      });
+    it("Check balance 1", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      expect(
+        await extraObj.contract.getEventBalance(eventId, mainObj.addr1.address)
+      ).to.equal(1);
+    });
 
-      it("tokenURI not shared", async function() {
-        const {mainObj, conditionObj, extraObj} = await loadFixture(allContractFixture);
-          await conditionObj.contract.connect(conditionObj.owner).SetContract(mainObj.contract.address);
-          const eventId= 1; 
-          const eventData = {maxSupply: 50,supply: 0, maxMintsPerAddress:1, isActive: false, isSame: false, uri:"ipfs://pfsuri/", conditionContract:conditionObj.contract.address};
-          await extraObj.contract.connect(extraObj.owner).addEvent(eventId, eventData.maxSupply, eventData.maxMintsPerAddress,eventData.uri, eventData.conditionContract, eventData.isSame);
-           await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
-          await mainObj.contract.connect(mainObj.owner).ownerMint(1, mainObj.addr1.address);
-          await extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1);
-          expect(await extraObj.contract.tokenURI(1)).to.equal(eventData.uri.concat("1.json"));
-      });
+    it("mint event inactive", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      // await extraObj.contract.connect(extraObj.owner).activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await expect(
+        extraObj.contract
+          .connect(mainObj.addr1)
+          .mintKatsuraOjisanExtra(eventId, 1)
+      ).to.be.revertedWith("Event check failed");
+    });
+
+    it("mint maxsupply exceed", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 1,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr2.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      await expect(
+        extraObj.contract
+          .connect(mainObj.addr2)
+          .mintKatsuraOjisanExtra(eventId, 1)
+      ).to.be.revertedWith("Event check failed");
+    });
+
+    it("mint maxMintsPerAddress exceed", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      await expect(
+        extraObj.contract
+          .connect(mainObj.addr1)
+          .mintKatsuraOjisanExtra(eventId, 1)
+      ).to.be.revertedWith("Event check failed");
+    });
+
+    it("mint condition fail", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await expect(
+        extraObj.contract
+          .connect(mainObj.addr1)
+          .mintKatsuraOjisanExtra(eventId, 1)
+      ).to.be.revertedWith("Condition check failed");
+    });
+
+    it("mint not random success", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      expect(await extraObj.contract.ownerOf(1)).to.equal(
+        mainObj.addr1.address
+      );
+    });
+
+    it("mint random success", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 10,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,5);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,2,5);
+      
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+
+      expect(await extraObj.contract.ownerOf(1)).to.equal(
+        mainObj.addr1.address
+      );
+
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 4);
+      
+      const balance = await extraObj.contract.balanceOf(mainObj.addr1.address);
+      expect(balance).to.equal(eventData.maxSupply);
+      let listRealToken = [];
+      for(let i=0;i<balance;i++)
+      {
+        const token = await extraObj.contract.tokenOfOwnerByIndex(mainObj.addr1.address, i);
+        const realToken = await extraObj.contract.realTokens(token);
+        listRealToken.push(realToken);
+        expect(await extraObj.contract.ownerOf(token)).to.equal(
+          mainObj.addr1.address
+        );
+      }
+      let type1Count = 0;
+      let type2Count = 0;
+      for(let i=0;i<listRealToken.length;i++)
+      {
+        if(listRealToken[i] == 1)
+        {
+          type1Count++;
+        }
+
+         if(listRealToken[i] == 2)
+        {
+          type2Count++;
+        }
+      }
+      expect(type1Count).to.equal(5);
+      expect(type2Count).to.equal(5);
+      
+    });
+
+    it("tokenURI shared", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: true,
+        isRandom: false,
+        uri: "ipfsuri",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      expect(await extraObj.contract.tokenURI(1)).to.equal(eventData.uri);
+    });
+
+    it("tokenURI not shared", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 50,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: false,
+        isRandom: false,
+        uri: "ipfs://pfsuri/",
+        conditionContract: conditionObj.contract.address
+      };
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      expect(await extraObj.contract.tokenURI(1)).to.equal(
+        eventData.uri.concat("1.json")
+      );
+    });
+    
+    it("tokenURI random", async function() {
+      const { mainObj, conditionObj, extraObj } = await loadFixture(
+        allContractFixture
+      );
+      await conditionObj.contract
+        .connect(conditionObj.owner)
+        .SetContract(mainObj.contract.address);
+      const eventId = 1;
+      const eventData = {
+        maxSupply: 10,
+        supply: 0,
+        maxMintsPerAddress: 1,
+        isActive: false,
+        isSame: false,
+        isRandom: true,
+        uri: "ipfs://pfsuri/",
+        conditionContract: conditionObj.contract.address
+      };
+
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,5);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,2,5);
+
+
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .addEvent(
+          eventId,
+          eventData.maxSupply,
+          eventData.maxMintsPerAddress,
+          eventData.uri,
+          eventData.conditionContract,
+          eventData.isSame,
+          eventData.isRandom
+        );
+      await extraObj.contract
+        .connect(extraObj.owner)
+        .activeEvent(eventId, true);
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      await extraObj.contract
+        .connect(mainObj.addr1)
+        .mintKatsuraOjisanExtra(eventId, 1);
+      
+      const realToken = await extraObj.contract.realTokens(1);
+      expect(await extraObj.contract.tokenURI(1)).to.equal(
+        eventData.uri.concat(realToken, ".json")
+      );
+    });
 
   });
 

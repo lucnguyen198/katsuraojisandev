@@ -17,27 +17,45 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
     uint256 maxMintsPerAddress;
     bool isActive;
     bool isSame;
+    bool isRandom;
     string uri;
     address conditionContract;
     mapping (address => uint256) balance;
     }
     mapping(uint256 => KOJEvent) public events;
-    mapping (uint256 => uint256) public tokens;
     mapping (uint256 => uint256) public realTokens;
+    mapping (uint256 => uint256) public tokenTypes;
+    mapping (uint256 => uint256[]) public collections;
+    uint256 public maxMintPerTX = 5;
 
     constructor() ERC721("Katsura Ojisan Extra", "KOJE") {
 
     }
 
-
-    function addEvent(uint256 _eventId, uint256 _maxSupply, uint256 _maxMintsPerAddress, string calldata _uri, address _conditionContract, bool _isSame) public onlyOwner
+    function AddCollection(uint256 _eventId, uint256 _token, uint256 _count) external onlyOwner 
     {
+        for(uint256 i=0;i<_count;i++)
+        {
+            collections[_eventId].push(_token);
+        }
+    }
+
+    function RemoveCollection(uint256 _eventId) external onlyOwner 
+    {
+        delete collections[_eventId];
+    }
+
+    function addEvent(uint256 _eventId, uint256 _maxSupply, uint256 _maxMintsPerAddress, string calldata _uri, address _conditionContract, bool _isSame, bool _isRandom) public onlyOwner
+    {
+        if(!_isSame && _isRandom)
+            require(_maxSupply == collections[_eventId].length,"not match quantity");
         KOJEvent storage mEvent = events[_eventId];
         mEvent.maxSupply = _maxSupply;
         mEvent.maxMintsPerAddress = _maxMintsPerAddress;
         mEvent.uri = _uri;
         mEvent.conditionContract = _conditionContract;
         mEvent.isSame = _isSame;
+        mEvent.isRandom = _isRandom;
     }
 
     function activeEvent(uint256 _eventId, bool _isActive) public onlyOwner
@@ -67,17 +85,29 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
 
     function mintKatsuraOjisanExtra(uint256 _eventId, uint256 _mintAmount) public
     {
+        require(_mintAmount > 0 && _mintAmount <= maxMintPerTX, "invalid amount");
         require(eventCheck(_eventId, _mintAmount),"Event check failed");
         require(conditionCheck(_eventId, msg.sender),"Condition check failed");
         KOJEvent storage mKOJEvent =  events[_eventId];
         uint256 mSupply = totalSupply() + mKOJEvent.supply;
+        uint256[] storage mCollection = collections[_eventId];
         for (uint256 i = 1; i <= _mintAmount; i++) 
         {
             uint256 mTokenId = mSupply + i;
             mKOJEvent.supply++;
             mKOJEvent.balance[msg.sender]++;
-            tokens[mTokenId] = _eventId;
-            realTokens[mTokenId] = mKOJEvent.supply;
+            tokenTypes[mTokenId] = _eventId;
+            if(mKOJEvent.isRandom)
+            {
+                uint256 mRandIndex = uint256(keccak256(abi.encodePacked(block.timestamp, msg.sender, mTokenId))) % mCollection.length;
+                realTokens[mTokenId] = mCollection[mRandIndex];
+                mCollection[mRandIndex] = mCollection[mCollection.length - 1];
+                mCollection.pop();
+            }
+            else
+            {
+                realTokens[mTokenId] = mKOJEvent.supply;
+            }
             _safeMint(msg.sender, mTokenId);
         }
     }
@@ -85,7 +115,7 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
     function tokenURI(uint256 _tokenId) public view virtual override returns (string memory) {
         require(_exists(_tokenId),"nonexistent token");
         string memory mId = realTokens[_tokenId].toString();
-        KOJEvent storage mKOJEvent =  events[tokens[_tokenId]];
+        KOJEvent storage mKOJEvent =  events[tokenTypes[_tokenId]];
         if(mKOJEvent.isSame)
             return mKOJEvent.uri;
         return(string(abi.encodePacked(mKOJEvent.uri, mId, ".json")));        
