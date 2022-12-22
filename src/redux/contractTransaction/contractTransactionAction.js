@@ -1,9 +1,14 @@
 import store from "../store";
 import * as ActionTypes from "../defines/actiontypes";
-import { fetchData,fetchAccountData, fetchExtraData, fetchAccountExtraData } from "../contractData/contractDataAction";
+import {
+  fetchData,
+  fetchAccountData,
+  fetchExtraData,
+  fetchAccountExtraData
+} from "../contractData/contractDataAction";
 import { getConfig } from "../Config";
 const { getProof } = require("../../WhitelistUtil");
-require('dotenv').config();
+require("dotenv").config();
 const sendTransactionRequest = () => {
   return {
     type: ActionTypes.CONTRACT_TRANSACTION_REQUEST
@@ -129,10 +134,13 @@ export const sendWhitelistMintTransaction = mintAmount => {
 export const sendExtraMintTransaction = mintAmount => {
   return async dispatch => {
     dispatch(sendTransactionRequest());
-    let smartContract = store.getState().connect.extraSmartContract;
+    let smartContract = store.getState().connect.smartContract;
     let provider = store.getState().connect.metamaskProvider;
     const contractWithSigner = smartContract.connect(provider.getSigner());
-    const gasEstimated = await contractWithSigner.estimateGas.mintKatsuraOjisanExtra(process.env.REACT_APP_EVENT_ID, mintAmount);
+    const gasEstimated = await contractWithSigner.estimateGas.mintKatsuraOjisanExtra(
+      process.env.REACT_APP_EVENT_ID,
+      mintAmount
+    );
     const marginGas = Math.ceil(gasEstimated * 1.1);
     const CONFIG = getConfig();
     contractWithSigner
@@ -169,7 +177,6 @@ export const sendExtraMintTransaction = mintAmount => {
   };
 };
 
-
 export const checkPendingTransaction = txError => {
   return async dispatch => {
     try {
@@ -205,11 +212,7 @@ export const checkPendingTransaction = txError => {
         })
       );
     } catch (error) {
-      dispatch(
-        sendTransactionFailed(
-          "Check pending transaction failed."
-        )
-      );
+      dispatch(sendTransactionFailed("Check pending transaction failed."));
     }
   };
 };

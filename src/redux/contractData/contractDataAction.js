@@ -1,7 +1,7 @@
 import store from "../store";
 import * as ActionTypes from "../defines/actiontypes";
-const {getProof} = require("../../WhitelistUtil");
-require('dotenv').config();
+const { getProof } = require("../../WhitelistUtil");
+require("dotenv").config();
 const fetchDataRequest = () => {
   return {
     type: ActionTypes.CONTRACT_DATA_REQUEST
@@ -43,7 +43,6 @@ const fetchDataFailed = payload => {
   };
 };
 
-
 export const fetchData = () => {
   return async dispatch => {
     dispatch(fetchDataRequest());
@@ -75,9 +74,7 @@ export const fetchData = () => {
         })
       );
     } catch (error) {
-      dispatch(
-        fetchDataFailed("Something went wrong!")
-      );
+      dispatch(fetchDataFailed("Something went wrong!"));
     }
   };
 };
@@ -112,20 +109,19 @@ export const fetchAccountData = () => {
         })
       );
     } catch (error) {
-      dispatch(
-        fetchDataFailed("Something went wrong!")
-      );
+      dispatch(fetchDataFailed("Something went wrong!"));
     }
   };
 };
-
 
 export const fetchExtraData = () => {
   return async dispatch => {
     dispatch(fetchDataRequest());
     try {
-      let smartContract = store.getState().connect.extraSmartContract;
-      const eventData = await smartContract.events(process.env.REACT_APP_EVENT_ID);
+      let smartContract = store.getState().connect.smartContract;
+      const eventData = await smartContract.events(
+        process.env.REACT_APP_EVENT_ID
+      );
       let extraMaxSupply = eventData.maxSupply;
       let extraSupply = eventData.supply;
       let extraMaxMint = eventData.maxMintsPerAddress;
@@ -140,9 +136,7 @@ export const fetchExtraData = () => {
         })
       );
     } catch (error) {
-      dispatch(
-        fetchDataFailed("Something went wrong!")
-      );
+      dispatch(fetchDataFailed("Something went wrong!"));
     }
   };
 };
@@ -151,20 +145,24 @@ export const fetchAccountExtraData = () => {
   return async dispatch => {
     dispatch(fetchDataRequest());
     try {
-      let smartContract = store.getState().connect.extraSmartContract;
+      let smartContract = store.getState().connect.smartContract;
       const account = store.getState().connect.account;
-      const conditionCheck = await smartContract.conditionCheck(process.env.REACT_APP_EVENT_ID, account);
-      const eventBalance = await smartContract.getEventBalance(process.env.REACT_APP_EVENT_ID, account);
+      const conditionCheck = await smartContract.conditionCheck(
+        process.env.REACT_APP_EVENT_ID,
+        account
+      );
+      const eventBalance = await smartContract.getEventBalance(
+        process.env.REACT_APP_EVENT_ID,
+        account
+      );
       dispatch(
         fetchAccountExtraDataSuccess({
-          conditionCheck:conditionCheck,
+          conditionCheck: conditionCheck,
           eventBalance: eventBalance.toNumber()
         })
       );
     } catch (error) {
-      dispatch(
-        fetchDataFailed("Something went wrong!")
-      );
+      dispatch(fetchDataFailed("Something went wrong!"));
     }
   };
 };

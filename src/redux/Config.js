@@ -11,6 +11,7 @@ export const getConfig = () => {
     NFT_NAME: "KatsuraOjisan",
     SYMBOL: "KOJ",
     MAX_SUPPLY: 1111,
-    GAS_PRICE: 32000000000 //32GWEI -- polygon min gas price: 30 GWEI
+    GAS_PRICE: 32000000000, //32GWEI -- polygon min gas price: 30 GWEI
+    MAX_MIN_PER_TX: 5
   };
 };

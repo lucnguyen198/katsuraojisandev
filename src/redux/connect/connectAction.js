@@ -1,8 +1,8 @@
 import * as ActionTypes from "../defines/actiontypes";
-import { fetchData } from "../contractData/contractDataAction";
+import { fetchExtraData } from "../contractData/contractDataAction";
 import { getConfig } from "../Config";
 import { ethers } from "ethers";
-import KatsuraOjisan from "../../artifacts/contracts/KatsuraOjisan.sol/KatsuraOjisan.json";
+//import KatsuraOjisan from "../../artifacts/contracts/KatsuraOjisan.sol/KatsuraOjisan.json";
 import KatsuraOjisanExtra from "../../artifacts/contracts/KatsuraOjisanExtra.sol/KatsuraOjisanExtra.json";
 const contractAddresses = require("../../ContractAddresses.json");
 
@@ -71,11 +71,11 @@ export const checkNetwork = (networkId, ethereum) => {
         const provider = ethers.getDefaultProvider(
           process.env.REACT_APP_ALCHEMY_RPC_URL
         );
-        const SmartContractObj = new ethers.Contract(
-          contractAddresses.KatsuraOjisan,
-          KatsuraOjisan.abi,
-          provider
-        );
+        // const SmartContractObj = new ethers.Contract(
+        //   contractAddresses.KatsuraOjisan,
+        //   KatsuraOjisan.abi,
+        //   provider
+        // );
         const extraSmartContractObj = new ethers.Contract(
           contractAddresses.KatsuraOjisanExtra,
           KatsuraOjisanExtra.abi,
@@ -85,12 +85,11 @@ export const checkNetwork = (networkId, ethereum) => {
           initContractSuccess({
             provider: provider,
             metamaskConnected: true,
-            smartContract: SmartContractObj,
-            metamaskProvider: metamaskProvider,
-            extraSmartContract: extraSmartContractObj
+            smartContract: extraSmartContractObj,
+            metamaskProvider: metamaskProvider
           })
         );
-        //dispatch(fetchData());
+        dispatch(fetchExtraData());
       } catch (error) {
         dispatch(connectFailed("Something went wrong. " + error.message));
       }
@@ -126,11 +125,7 @@ export const checkNetwork = (networkId, ethereum) => {
             ]
           });
         } catch (addError) {
-          dispatch(
-            connectFailed(
-              "Something went wrong!"
-            )
-          );
+          dispatch(connectFailed("Something went wrong!"));
         }
         // if (switchError.code === 4902) {
 

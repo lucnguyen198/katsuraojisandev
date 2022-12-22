@@ -5,14 +5,14 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 const contractAddresses = require("../src/ContractAddresses.json");
-
+require('dotenv').config();
 async function main() {
   // We get the contract to deploy
   const contract = await (
     await ethers.getContractFactory("KatsuraOjisanExtra")
   ).attach(contractAddresses.KatsuraOjisanExtra);
-  console.log("Active event");
-  const tx = await contract.activeEvent(1, false);
+  console.log("Disable event");
+  const tx = await contract.activeEvent(process.env.REACT_APP_EVENT_ID, false);
   await tx.wait();
   console.log("Success");
 }

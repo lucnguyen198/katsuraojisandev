@@ -89,14 +89,14 @@ export default function MintContent() {
     dispatch(connect());
   };
 
-   const onOriginClick = e => {
+  const onOriginClick = e => {
     setMode(1);
     getContractData();
   };
 
-   const onExtraClick = e => {
-     setMode(2);
-     getExtraContractData();
+  const onExtraClick = e => {
+    setMode(2);
+    getExtraContractData();
   };
 
   const onMintClick = e => {
@@ -120,8 +120,8 @@ export default function MintContent() {
 
   const incrementMintAmount = e => {
     let newMintAmount = mintAmount + 1;
-    if (newMintAmount > contractDataState.maxMintPerTX) {
-      newMintAmount = contractDataState.maxMintPerTX;
+    if (newMintAmount > CONFIG.MAX_MIN_PER_TX) {
+      newMintAmount = CONFIG.MAX_MIN_PER_TX;
     }
     setMintAmount(newMintAmount);
   };
@@ -222,9 +222,7 @@ export default function MintContent() {
   };
 
   const extraSaleNotLive = () => {
-    return (
-      contractDataState.isEventActive === false
-    );
+    return contractDataState.isEventActive === false;
   };
 
   //02_soldout.png isSoldOut == true
@@ -233,7 +231,9 @@ export default function MintContent() {
   };
 
   const isExtraSoldOut = () => {
-    return contractDataState.extraSupply == contractDataState.extraSupplyMaxSupply;
+    return (
+      contractDataState.extraSupply == contractDataState.extraSupplyMaxSupply
+    );
   };
 
   //03_list.png isNotWhitelisted == true
@@ -244,9 +244,7 @@ export default function MintContent() {
   };
 
   const extraConditionCheck = () => {
-    return (
-      contractDataState.conditionCheck
-    );
+    return contractDataState.conditionCheck;
   };
 
   const isAccountConnected = () => {
@@ -257,9 +255,9 @@ export default function MintContent() {
     return contractDataState.accountLoad;
   };
 
-  const isLoadContractDone = () =>{
+  const isLoadContractDone = () => {
     return contractDataState.contractLoad;
-  }
+  };
   //05_mint.png canMint == true
   /* const canMint = () => {
     return (
@@ -272,170 +270,87 @@ export default function MintContent() {
   return (
     <Container padding="30px 0">
       <BlockCenter>
-        {isAccountDataLoad() === false && (
-                  <Button
-                    disabled={!canConnect()}
-                    onClick={onConnectClick}
-                    margin="50px 0 0"
-                  >
-                    Connect Wallet
-                  </Button>
-            )}
+        {isLoadContractDone() === true && (
+          <>
+            {isExtraSoldOut() === true && <Title>Sold Out</Title>}
 
-            {isAccountDataLoad() === true && mode == 0 &&(
-                <>
-                <Button
-                    onClick={onOriginClick}
-                    margin="50px 0 0"
-                  >
-                    KatsuraOjisan Origin
-                  </Button>
-
-                 <Button
-                    onClick={onExtraClick}
-                    margin="50px 0 0"
-                  >
-                    KatsuraOjisan Extra
-                  </Button>
-                  </>
-              )
-            }
-            {isLoadContractDone() === true &&(
+            {extraSaleNotLive() === true && isExtraSoldOut() === false && (
               <>
-              {mode == 1 &&(
-              <>
-                {isSoldOut() === true && (
-                <Title>Sold Out</Title>
-                )}
-
-                {saleNotLive() === true && isSoldOut() === false && (
-                <>
-                  <Title>COMING SOON</Title>
-                  <Button disabled margin="20px 0 0">
-                    Connect Wallet
-                  </Button>
-                </>
-                )}
-
-                {saleNotLive() === false &&
-                isSoldOut() === false &&
-                isNotWhitelisted() === true && (
-                  <>
-                    <Title>ホワイトリストに登録されていません</Title>
-                    <Button disabled margin="20px 0 0">
-                      Connect Wallet
-                    </Button>
-                  </>
-                )}
-
-                {saleNotLive() === false &&
-                isSoldOut() === false &&
-                isNotWhitelisted() === false && (
-                  <>
-                    <LargeTitle color="#edff55">
-                      {contractDataState.totalSupply}/{CONFIG.MAX_SUPPLY}
-                    </LargeTitle>
-
-                    <Text>Mint free</Text>
-                    <Text margin="0 0 50px">5Max Per Wallet & TX</Text>
-
-                    <FlexWrapper
-                      className="mintAmountBox"
-                      justify="center"
-                      align="center"
-                    >
-                      <ButtonCircle
-                        disabled={mintAmount == 1 || isLoading()}
-                        onClick={decrementMintAmount}
-                      >
-                        {" "}
-                        -{" "}
-                      </ButtonCircle>
-                      <InputValue>{mintAmount}</InputValue>
-                      <ButtonCircle
-                        disabled={
-                          mintAmount == contractDataState.maxMintPerTX || isLoading()
-                        }
-                        onClick={incrementMintAmount}
-                      >
-                        +
-                      </ButtonCircle>
-                    </FlexWrapper>
-                    <Button
-                      disabled={isLoading() || !canMint()}
-                      onClick={onMintClick}
-                      margin="20px 0 0"
-                    >
-                      Mint
-                    </Button>
-                  </>
-                )}
+                <Title>COMING SOON</Title>
+                <Button disabled margin="20px 0 0">
+                  Connect Wallet
+                </Button>
               </>
             )}
 
-            {mode == 2 &&(
-              <>
-                {isExtraSoldOut() === true && (
-                <Title>Sold Out</Title>
-                )}
-
-                {extraSaleNotLive() === true && isExtraSoldOut() === false && (
-                <Title>COMING SOON</Title>
+            {extraSaleNotLive() === false &&
+              isExtraSoldOut() === false &&
+              isAccountDataLoad() === false && (
+                <Button
+                  disabled={!canConnect()}
+                  onClick={onConnectClick}
+                  margin="50px 0 0"
+                >
+                  Connect Wallet
+                </Button>
               )}
 
-                {extraSaleNotLive() === false &&
-                isSoldOut() === false &&
-                extraConditionCheck() === false && (
-                  <Title>You have no origin katsura ojisan nft</Title>
-                )}
+            {extraSaleNotLive() === false &&
+              isSoldOut() === false &&
+              isAccountDataLoad() === true &&
+              extraConditionCheck() === false && (
+                <Title>NFTを持っていません</Title>
+              )}
 
-                {extraSaleNotLive() === false &&
-                isSoldOut() === false &&
-                extraConditionCheck() === true && (
-                  <>
-                    <LargeTitle color="#edff55">
-                      {contractDataState.extraSupply}/{contractDataState.extraMaxSupply}
-                    </LargeTitle>
+            {extraSaleNotLive() === false &&
+              isSoldOut() === false &&
+              extraConditionCheck() === true && (
+                <>
+                  <LargeTitle color="#edff55">
+                    {contractDataState.extraSupply}/
+                    {contractDataState.extraMaxSupply}
+                  </LargeTitle>
 
-                    <Text>Mint free</Text>
-                    <Text margin="0 0 50px">{contractDataState.extraMaxMint}Max Per Wallet</Text>
+                  <Text>Mint free</Text>
+                  <Text margin="0 0 50px">
+                    {contractDataState.extraMaxMint}Max Per Wallet
+                  </Text>
 
-                    <FlexWrapper
-                      className="mintAmountBox"
-                      justify="center"
-                      align="center"
+                  <FlexWrapper
+                    className="mintAmountBox"
+                    justify="center"
+                    align="center"
+                  >
+                    <ButtonCircle
+                      disabled={mintAmount == 1 || isLoading()}
+                      onClick={decrementMintAmount}
                     >
-                      <ButtonCircle
-                        disabled={mintAmount == 1 || isLoading()}
-                        onClick={decrementMintAmount}
-                      >
-                        {" "}
-                        -{" "}
-                      </ButtonCircle>
-                      <InputValue>{mintAmount}</InputValue>
-                      <ButtonCircle
-                        disabled={
-                          mintAmount == contractDataState.extraMaxMint || isLoading()
-                        }
-                        onClick={incrementMintAmount}
-                      >
-                        +
-                      </ButtonCircle>
-                    </FlexWrapper>
-                    <Button
-                      disabled={isLoading() || !canExtraMint()}
-                      onClick={onExtraMintClick}
-                      margin="20px 0 0"
+                      {" "}
+                      -{" "}
+                    </ButtonCircle>
+                    <InputValue>{mintAmount}</InputValue>
+                    <ButtonCircle
+                      disabled={
+                        mintAmount == contractDataState.extraMaxMint ||
+                        isLoading()
+                      }
+                      onClick={incrementMintAmount}
                     >
-                      Mint
-                    </Button>
-                  </>
-                )}
-              </>
-            )}
-              </>
-            )}
-            
+                      +
+                    </ButtonCircle>
+                  </FlexWrapper>
+                  <Button
+                    disabled={isLoading() || !canExtraMint()}
+                    onClick={onExtraMintClick}
+                    margin="20px 0 0"
+                  >
+                    Mint
+                  </Button>
+                </>
+              )}
+          </>
+        )}
+
         {statusMsg && <Text margin="20px 0 0">{statusMsg}</Text>}
       </BlockCenter>
     </Container>
