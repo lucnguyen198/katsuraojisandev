@@ -232,7 +232,7 @@ export default function MintContent() {
 
   const isExtraSoldOut = () => {
     return (
-      contractDataState.extraSupply == contractDataState.extraSupplyMaxSupply
+      contractDataState.extraSupply == contractDataState.extraMaxSupply
     );
   };
 

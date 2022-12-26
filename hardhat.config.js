@@ -38,7 +38,7 @@ module.exports = {
     mumbai: {
       url: secrets.url,
       accounts: [secrets.key],
-      gasPrice: 35000000000
+      gasPrice: 42000000000
     }
     // polygon: {
     //   url: secrets.url,

@@ -28,7 +28,7 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
     mapping (uint256 => uint256[]) public collections;
     uint256 public maxMintPerTX = 5;
 
-    constructor() ERC721("Katsura Ojisan Extra", "KOJE") {
+    constructor() ERC721("Katsura Ojisan Extra", "KOX") {
 
     }
 
