@@ -16,7 +16,7 @@ async function main() {
   const maxMintPerAddress = 1;
   const isSame = false;
   const isRandom = true;
-  const ipfs = "ipfs://QmP2y4shp4dR22HoEGYYc9H7xkkZuDqAhmwmB8bw9EA3w5/"; // add "/" in last if isSame == false
+  const ipfs = "ipfs://QmVnvVMtX6BuSLLNiwn42kBegXYBgqCGXMsuKAVzi33Hhb/"; // add "/" in last if isSame == false
   const tx = await contract.addEvent(
     process.env.REACT_APP_EVENT_ID,
     maxSupply,

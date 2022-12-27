@@ -144,7 +144,7 @@ export const sendExtraMintTransaction = mintAmount => {
     const marginGas = Math.ceil(gasEstimated * 1.1);
     const CONFIG = getConfig();
     contractWithSigner
-      .mintKatsuraOjisanExtra(mintAmount, process.env.REACT_APP_EVENT_ID, {
+      .mintKatsuraOjisanExtra(process.env.REACT_APP_EVENT_ID, mintAmount, {
         gasPrice: CONFIG.GAS_PRICE,
         gasLimit: marginGas
       })
