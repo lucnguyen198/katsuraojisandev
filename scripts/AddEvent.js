@@ -5,7 +5,7 @@
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
 const contractAddresses = require("../src/ContractAddresses.json");
-require('dotenv').config();
+require("dotenv").config();
 async function main() {
   // We get the contract to deploy
   const contract = await (
@@ -16,8 +16,16 @@ async function main() {
   const maxMintPerAddress = 1;
   const isSame = false;
   const isRandom = true;
-  const ipfs = "ipfs://QmVHTjo2Dtd6U8MkcQcQsVoVBq5mkM6wp8b8FqEzqfVHVp/"; // add "/" in last if isSame == false
-  const tx = await contract.addEvent(process.env.REACT_APP_EVENT_ID, maxSupply, maxMintPerAddress, ipfs, contractAddresses.KatsuraOjisanCondition, isSame, isRandom);
+  const ipfs = "ipfs://QmP2y4shp4dR22HoEGYYc9H7xkkZuDqAhmwmB8bw9EA3w5/"; // add "/" in last if isSame == false
+  const tx = await contract.addEvent(
+    process.env.REACT_APP_EVENT_ID,
+    maxSupply,
+    maxMintPerAddress,
+    ipfs,
+    contractAddresses.KatsuraOjisanCondition,
+    isSame,
+    isRandom
+  );
   await tx.wait();
   console.log("Success");
 }

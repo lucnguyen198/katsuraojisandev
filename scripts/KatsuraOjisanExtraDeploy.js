@@ -28,17 +28,17 @@ async function main() {
     (await ethers.provider.getBlockNumber()).toString()
   );
 
-  const conditionFactory = await hre.ethers.getContractFactory(
-    "KatsuraOjisanExtraCondition"
-  );
+  // const conditionFactory = await hre.ethers.getContractFactory(
+  //   "KatsuraOjisanExtraCondition"
+  // );
 
-  console.log("Deploying KatsuraOjisanExtraCondition contract");
-  const conditionContract = await conditionFactory.deploy();
-  await conditionContract.deployed();
-  console.log(
-    "KatsuraOjisanExtraCondition deployed to:",
-    conditionContract.address
-  );
+  // console.log("Deploying KatsuraOjisanExtraCondition contract");
+  // const conditionContract = await conditionFactory.deploy();
+  // await conditionContract.deployed();
+  // console.log(
+  //   "KatsuraOjisanExtraCondition deployed to:",
+  //   conditionContract.address
+  // );
 
   // We get the contract to deploy
   const extraFactory = await hre.ethers.getContractFactory(
@@ -51,7 +51,7 @@ async function main() {
   console.log("KatsuraOjisan extra deployed to:", extraContract.address);
 
   contractAddresses.KatsuraOjisanExtra = extraContract.address;
-  contractAddresses.KatsuraOjisanCondition = conditionContract.address;
+  //contractAddresses.KatsuraOjisanCondition = conditionContract.address;
 
   fs.writeFileSync(
     `${basePath}/src/ContractAddresses.json`,

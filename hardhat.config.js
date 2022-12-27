@@ -38,7 +38,7 @@ module.exports = {
     mumbai: {
       url: secrets.url,
       accounts: [secrets.key],
-      gasPrice: 42000000000
+      gasPrice: 40000000000
     }
     // polygon: {
     //   url: secrets.url,
@@ -50,7 +50,7 @@ module.exports = {
     apiKey: "RMTH5JJWARMRSZKQ81FD93B5P43KY426WA"
   },
   gasReporter: {
-    gasPrice: 35,
-    enabled: false
+    gasPrice: 40,
+    enabled: true
   }
 };

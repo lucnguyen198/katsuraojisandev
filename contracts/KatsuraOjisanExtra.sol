@@ -28,7 +28,7 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
     mapping (uint256 => uint256[]) public collections;
     uint256 public maxMintPerTX = 5;
 
-    constructor() ERC721("Katsura Ojisan Extra", "KOX") {
+    constructor() ERC721("Katsura Ojisan New Year 2023", "KO23") {
 
     }
 
@@ -89,7 +89,7 @@ contract KatsuraOjisanExtra is ERC721Enumerable, Ownable {
         require(eventCheck(_eventId, _mintAmount),"Event check failed");
         require(conditionCheck(_eventId, msg.sender),"Condition check failed");
         KOJEvent storage mKOJEvent =  events[_eventId];
-        uint256 mSupply = totalSupply() + mKOJEvent.supply;
+        uint256 mSupply = totalSupply();
         uint256[] storage mCollection = collections[_eventId];
         for (uint256 i = 1; i <= _mintAmount; i++) 
         {
