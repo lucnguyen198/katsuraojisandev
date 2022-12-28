@@ -1106,11 +1106,32 @@ describe("TEST", function() {
       await conditionObj.contract
         .connect(conditionObj.owner)
         .SetContract(mainObj.contract.address);
+
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr1.address);
+      
+       await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr2.address);
+
+       await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr3.address);
+
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr4.address);
+      
+      await mainObj.contract
+        .connect(mainObj.owner)
+        .ownerMint(1, mainObj.addr5.address);
+
       const eventId = 1;
       const eventData = {
-        maxSupply: 10,
+        maxSupply: 60,
         supply: 0,
-        maxMintsPerAddress: 10,
+        maxMintsPerAddress: 12,
         isActive: false,
         isSame: false,
         isRandom: true,
@@ -1118,8 +1139,12 @@ describe("TEST", function() {
         conditionContract: conditionObj.contract.address
       };
 
-      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,5);
-      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,2,5);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,1,10);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,2,10);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,3,10);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,4,10);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,5,10);
+      await extraObj.contract.connect(extraObj.owner).AddCollection(eventId,6,10);
       
       await extraObj.contract
         .connect(extraObj.owner)
@@ -1136,17 +1161,9 @@ describe("TEST", function() {
         .connect(extraObj.owner)
         .activeEvent(eventId, true);
 
-      await mainObj.contract
-        .connect(mainObj.owner)
-        .ownerMint(1, mainObj.addr1.address);
-
       await extraObj.contract
         .connect(mainObj.addr1)
-        .mintKatsuraOjisanExtra(eventId, 1);
-
-      expect(await extraObj.contract.ownerOf(1)).to.equal(
-        mainObj.addr1.address
-      );
+        .mintKatsuraOjisanExtra(eventId, 5);
 
       await extraObj.contract
         .connect(mainObj.addr1)
@@ -1154,36 +1171,108 @@ describe("TEST", function() {
 
       await extraObj.contract
         .connect(mainObj.addr1)
-        .mintKatsuraOjisanExtra(eventId, 4);
+        .mintKatsuraOjisanExtra(eventId, 2);
+
+      await expect(extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Event check failed");
+
+      await extraObj.contract
+        .connect(mainObj.addr2)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr2)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr2)
+        .mintKatsuraOjisanExtra(eventId, 2);
+
+      await extraObj.contract
+        .connect(mainObj.addr3)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr3)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr3)
+        .mintKatsuraOjisanExtra(eventId, 2);
+
+      await extraObj.contract
+        .connect(mainObj.addr4)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr4)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr4)
+        .mintKatsuraOjisanExtra(eventId, 2);
       
-      const balance = await extraObj.contract.balanceOf(mainObj.addr1.address);
-      expect(balance).to.equal(eventData.maxSupply);
+      await extraObj.contract
+        .connect(mainObj.addr5)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr5)
+        .mintKatsuraOjisanExtra(eventId, 5);
+
+      await extraObj.contract
+        .connect(mainObj.addr5)
+        .mintKatsuraOjisanExtra(eventId, 2);
+      
+      await expect(extraObj.contract.connect(mainObj.addr1).mintKatsuraOjisanExtra(eventId, 1)).to.be.revertedWith("Event check failed");
+      
       let listRealToken = [];
-      for(let i=0;i<balance;i++)
+      for(let i=1;i<=60;i++)
       {
-        const token = await extraObj.contract.tokenOfOwnerByIndex(mainObj.addr1.address, i);
-        const realToken = await extraObj.contract.realTokens(token);
+        const realToken = await extraObj.contract.realTokens(i);
         listRealToken.push(realToken);
-        expect(await extraObj.contract.ownerOf(token)).to.equal(
-          mainObj.addr1.address
-        );
       }
       let type1Count = 0;
       let type2Count = 0;
+      let type3Count = 0;
+      let type4Count = 0;
+      let type5Count = 0;
+      let type6Count = 0;
       for(let i=0;i<listRealToken.length;i++)
       {
         if(listRealToken[i] == 1)
         {
           type1Count++;
         }
-
          if(listRealToken[i] == 2)
         {
           type2Count++;
         }
+         if(listRealToken[i] == 3)
+        {
+          type3Count++;
+        }
+         if(listRealToken[i] == 4)
+        {
+          type4Count++;
+        }
+         if(listRealToken[i] == 5)
+        {
+          type5Count++;
+        }
+         if(listRealToken[i] == 6)
+        {
+          type6Count++;
+        }
       }
-      expect(type1Count).to.equal(5);
-      expect(type2Count).to.equal(5);
+      
+      const total = await  extraObj.contract.totalSupply();
+      expect(total).to.equal(eventData.maxSupply);
+      expect(type1Count).to.equal(10);
+      expect(type2Count).to.equal(10);
+      expect(type3Count).to.equal(10);
+      expect(type4Count).to.equal(10);
+      expect(type5Count).to.equal(10);
+      expect(type6Count).to.equal(10);
       
     });
 
